@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     public float speed = 10.0f;
     float moveX = 0;
     float moveZ = 0;
+    public List<GameObject> plantas = new List<GameObject>();
+    public List<GameObject> piedras = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
