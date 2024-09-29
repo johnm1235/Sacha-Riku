@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     float moveZ = 0;
     public List<GameObject> plantas = new List<GameObject>();
     public List<GameObject> piedras = new List<GameObject>();
+    public CharacterController characterController; // Referencia al componente CharacterController
+    private bool canMove = true;
 
     private Animator animator; // Referencia al componente Animator
 
@@ -22,22 +24,32 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        moveX = Input.GetAxis("Horizontal");  // A/D
-        moveZ = Input.GetAxis("Vertical");    // W/S
+        moveX = Input.GetAxisRaw("Horizontal");  // A/D
+        moveZ = Input.GetAxisRaw("Vertical");    // W/S
 
-        // Move the player character
-        Vector3 moveDirection = new Vector3(0, 0, moveZ);
-        transform.Translate(moveDirection * Time.deltaTime * speed);  // Adjust speed as necessary
-
-        // Rotate the player character to face the direction of horizontal movement
-        if (moveX != 0)
+        if (canMove)
         {
-            float rotation = moveX * rotationSpeed * Time.deltaTime;
-            transform.Rotate(0, rotation, 0);
-        }
+            // Move the player character
+            Vector3 moveDirection = new Vector3(0, 0, moveZ);
+            moveDirection = moveDirection.normalized;
+            Vector3 localMove = transform.TransformDirection(moveDirection);
 
-        // Actualizar el parámetro isWalking en el Animator
-        bool isWalking = moveX != 0 || moveZ != 0;
-        animator.SetBool("isWalking", isWalking);
+            characterController.Move(localMove * speed * Time.deltaTime);
+            // Rotate the player character to face the direction of horizontal movement
+            if (moveX != 0)
+            {
+                float rotation = moveX * rotationSpeed * Time.deltaTime;
+                transform.Rotate(0, rotation, 0);
+            }
+
+            // Actualizar el parámetro isWalking en el Animator
+            bool isWalking = moveX != 0 || moveZ != 0;
+            animator.SetBool("isWalking", isWalking);
+        }
+    }
+    // Method to enable or disable movement
+    public void EnableMovement(bool enable)
+    {
+        canMove = enable;
     }
 }
